@@ -1,21 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+//JOH TOKEN AAYA WOH REAL YA FAKE CHECK KRTA HAI
+import { Injectable } from '@nestjs/common'; //THIS CLASS BE USED IN NESTJS SYSTEM
+import { PassportStrategy } from '@nestjs/passport'; //LOGIN SYSTEM KA ENGINE
+import { ExtractJwt, Strategy } from 'passport-jwt'; //EXTRAJWT=TOKEN KAHA SE MILEGA? , STRATEGY=TOKEN VERIFY KRNE KA RULE SYSTEM
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy) { //JWT VERIFICATION SYSTEM
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: 'supersecretkey',
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //YAHA SE TOKEN EXTRACT HOGA
+      ignoreExpiration: false, //EXPIRED TOKEN REJECT KRO
+      secretOrKey: 'supersecretkey', //SAME AS AUTHMODULE BECAUSE LOGIN>TOKEN GENEARATE AND STRATEGY DONO KO SAME KEY CHAIYE
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: any) {//PAYLOAD=TOKEN KE ANDAR KA DATA
     return {
-      userId: payload.id,
+      userId: payload.id, 
       email: payload.email,
-    };
+    }; //TOKEN SAHI HAI,YEH USER HAI
   }
 }
+
