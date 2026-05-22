@@ -24,7 +24,7 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:3000/todos", {
+      const res = await fetch("http://localhost:3001/todos", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,7 +46,7 @@ export default function DashboardComponent() {
 
       if (!task.trim()) return alert("Enter a task");
 
-      const res = await fetch("http://localhost:3000/todos", {
+      const res = await fetch("http://localhost:3001/todos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:3000/todos/${id}`, {
+      const res = await fetch(`http://localhost:3001/todos/${id}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:3000/todos/${id}`, {
+      await fetch(`http://localhost:3001/todos/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

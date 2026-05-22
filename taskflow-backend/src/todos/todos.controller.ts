@@ -16,7 +16,7 @@ export class TodosController {
 
   @Post()
   create(@Body() body: any, @Request() req) {
-    return this.service.create(body.title, req.user.id); //NEW TODO BELONGS TO LOGGED IN USER
+    return this.service.create(body.title, req.user.userId); //NEW TODO BELONGS TO LOGGED IN USER
   }
 
   @Patch(':id')
