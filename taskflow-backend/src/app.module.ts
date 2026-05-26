@@ -10,14 +10,17 @@ import { Todo } from './todos/todo.entity';
     // 🧠 DATABASE CONNECTION
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT as string) || 3306,
-      username: process.env.DB_USERNAME || 'root',
-      password: process.env.DB_PASSWORD || 'root',
-      database: process.env.DB_NAME || 'taskflow',
-      entities: [User, Todo],
-      synchronize: true, // (dev only)
-    }),
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      synchronize: true,
+      retryAttempts: 1,
+      retryDelay: 2000,
+      keepConnectionAlive: true,
+    });
 
     // 🔐 AUTH MODULE
     AuthModule,

@@ -4,28 +4,28 @@ import {
 import { TodosService } from './todos.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard) // ALL ROUTES IN HERE ARE PROTECTED
-@Controller('todos') //ROUTES HANDLE HOGA GET POST PATCH DELETE
+@Controller('todos')
+@UseGuards(JwtAuthGuard)
 export class TodosController {
-  constructor(private service: TodosService) {} //CONTROLLER ONLY REQ HANDLE ACTUAL KAAM SERVICE
+  constructor(private service: TodosService) {}
 
   @Get()
-  findAll(@Request() req) { //REQ OBJ = USER KA DATA + TOKEN INFO
-    return this.service.findAll(req.user.id); //JWT STRATEGY NE USER ATTACH KIA HAI RE MEIN SO ONLY THIS TODO WILL COME
+  findAll(@Request() req) {
+    return this.service.findAll(req.user.id);
   }
 
   @Post()
   create(@Body() body: any, @Request() req) {
-    return this.service.create(body.title, req.user.userId); //NEW TODO BELONGS TO LOGGED IN USER
+    return this.service.create(body.title, req.user.userId);
   }
 
   @Patch(':id')
-  toggle(@Param('id') id: number) { //MEANING TASK ID 5 UPDATE KRDO
+  toggle(@Param('id') id: number) {
     return this.service.toggle(id);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number) { //REMOVE FROM DB
+  delete(@Param('id') id: number) {
     return this.service.delete(id);
   }
 }
