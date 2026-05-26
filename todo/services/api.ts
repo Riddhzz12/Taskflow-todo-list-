@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 // LOGIN
 export const loginUser = async (email: string, password: string) => {
