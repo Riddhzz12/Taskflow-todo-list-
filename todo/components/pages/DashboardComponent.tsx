@@ -24,7 +24,7 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:3001/todos", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,7 +46,7 @@ export default function DashboardComponent() {
 
       if (!task.trim()) return alert("Enter a task");
 
-      const res = await fetch("http://localhost:3001/todos", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:3001/todos/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todos/${id}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:3001/todos/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todos/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -170,10 +170,9 @@ export default function DashboardComponent() {
             >
 
               <div className="flex items-center gap-4">
-                <input
-                  type="checkbox"
-                  checked={t.completed}
-                  onChange={() => toggleTask(t.id)}
+                <input type="checkbox" 
+                  checked={t.completed} 
+                  onChange={() => toggleTask(t.id)} 
                   className="w-5 h-5"
                 />
 
