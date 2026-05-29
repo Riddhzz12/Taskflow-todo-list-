@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { registerUser } from "@/services/api";
 
 export default function RegisterComponent() {
   const router = useRouter();
@@ -12,36 +13,18 @@ export default function RegisterComponent() {
 
   const handleRegister = async () => {
     try {
-      const res = await fetch("http://localhost:3001/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
+      const data = await registerUser(name, email, password);
 
-      const data = await res.json();
+      alert("Registered successfully 🚀");
 
-      if (res.ok) {
-        alert("Registered successfully 🚀");
+      setName("");
+      setEmail("");
+      setPassword("");
 
-        // clear form
-        setName("");
-        setEmail("");
-        setPassword("");
-
-        // redirect to login
-        router.push("/login");
-      } else {
-        alert(data.message || "Registration failed");
-      }
-    } catch (error) {
+      router.push("/login");
+    } catch (error: any) {
       console.log(error);
-      alert("Something went wrong");
+      alert(error.message || "Registration failed");
     }
   };
 
@@ -54,7 +37,6 @@ export default function RegisterComponent() {
           Register
         </h1>
 
-        {/* NAME */}
         <input
           className="w-full p-3 mb-3 rounded-xl bg-white/10 border border-white/20 outline-none text-white placeholder-gray-300"
           placeholder="Name"
@@ -62,7 +44,6 @@ export default function RegisterComponent() {
           onChange={(e) => setName(e.target.value)}
         />
 
-        {/* EMAIL */}
         <input
           className="w-full p-3 mb-3 rounded-xl bg-white/10 border border-white/20 outline-none text-white placeholder-gray-300"
           placeholder="Email"
@@ -70,7 +51,6 @@ export default function RegisterComponent() {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* PASSWORD */}
         <input
           type="password"
           className="w-full p-3 mb-5 rounded-xl bg-white/10 border border-white/20 outline-none text-white placeholder-gray-300"
@@ -79,7 +59,6 @@ export default function RegisterComponent() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {/* BUTTON */}
         <button
           onClick={handleRegister}
           className="w-full bg-pink-500 hover:bg-pink-600 transition p-3 rounded-xl font-semibold"

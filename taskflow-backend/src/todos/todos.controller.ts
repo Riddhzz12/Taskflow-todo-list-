@@ -16,7 +16,7 @@ export class TodosController {
 
   @Post()
   create(@Body() body: any, @Request() req) {
-    return this.service.create(body.title, req.user.userId);
+    return this.service.create(body.title, req.user.id);
   }
 
   @Patch(':id')

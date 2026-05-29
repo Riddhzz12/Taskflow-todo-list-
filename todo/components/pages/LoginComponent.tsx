@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { loginUser } from "@/services/api";
 
 export default function LoginComponent() {
   const [email, setEmail] = useState("");
@@ -9,19 +10,15 @@ export default function LoginComponent() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    const res = await fetch("http://localhost:3001/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const data = await loginUser(email, password);
 
-    const data = await res.json();
-
-    if (res.ok) {
       localStorage.setItem("token", data.token);
+
       router.push("/dashboard");
-    } else {
-      alert("Login failed");
+    } catch (error: any) {
+      console.log(error);
+      alert(error.message || "Login failed");
     }
   };
 

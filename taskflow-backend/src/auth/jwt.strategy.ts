@@ -13,9 +13,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) { //JWT VERIFICATION
     });
   }
 
-  async validate(payload: any) {//PAYLOAD=TOKEN KE ANDAR KA DATA
+  async validate(payload: any) {
+    console.log("jwt payload:",payload);//PAYLOAD=TOKEN KE ANDAR KA DATA
     return {
-      userId: payload.id, 
+      id: payload.id, 
       email: payload.email,
     }; //TOKEN SAHI HAI,YEH USER HAI
   }

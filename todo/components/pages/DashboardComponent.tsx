@@ -3,12 +3,21 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  getTodos,
+  addTodo,
+  toggleTodo,
+  deleteTodo,
+} from "@/services/api";
+
 export default function DashboardComponent() {
   const router = useRouter();
 
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -20,19 +29,14 @@ export default function DashboardComponent() {
     }
   }, []);
 
+  // GET TODOS
   const fetchTasks = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token") || "";
 
-      const res = await fetch("http://localhost:3001/todos", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const data = await getTodos(token);
 
-      const data = await res.json();
-
-      setTasks(data);
+      setTasks(data.data || data || []);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -40,63 +44,80 @@ export default function DashboardComponent() {
     }
   };
 
+  // ADD TODO
   const addTask = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token") || "";
 
       if (!task.trim()) return alert("Enter a task");
 
-      const res = await fetch("http://localhost:3001/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: task }),
-      });
+      const data = await addTodo(task, token);
+
+      setTasks([...tasks, data.data || data]);
+      setTask("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // UPLOAD IMAGE (FIXED)
+  const uploadImage = async () => {
+    if (!file) {
+      alert("Select image first");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
 
-      if (res.ok) {
-        setTasks([...tasks, data]);
-        setTask("");
-      }
+      console.log("IMAGE URL:", data.url);
+
+      alert("Image uploaded successfully 🚀");
+
+      // reset file after upload
+      setFile(null);
     } catch (error) {
       console.log(error);
+      alert("Upload failed");
     }
   };
 
+  // TOGGLE TODO
   const toggleTask = async (id: number) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token") || "";
 
-      const res = await fetch(`http://localhost:3001/todos/${id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const data = await toggleTodo(id, token);
 
-      const updated = await res.json();
+      const updated = data.data || data;
 
-      setTasks(tasks.map((t) => (t.id === id ? updated : t)));
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? updated : t))
+      );
     } catch (error) {
       console.log(error);
     }
   };
 
+  // DELETE TODO
   const deleteTask = async (id: number) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token") || "";
 
-      await fetch(`http://localhost:3001/todos/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await deleteTodo(id, token);
 
-      setTasks(tasks.filter((t) => t.id !== id));
+      setTasks((prev) => prev.filter((t) => t.id !== id));
     } catch (error) {
       console.log(error);
     }
@@ -154,7 +175,36 @@ export default function DashboardComponent() {
         </button>
       </div>
 
-      {/* EMPTY STATE */}
+      {/* IMAGE UPLOAD */}
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-3xl mb-8 flex flex-col gap-4 max-w-3xl">
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const selected = e.target.files?.[0];
+            if (selected) {
+              setFile(selected);
+              console.log("FILE SELECTED:", selected.name);
+            }
+          }}
+          className="bg-white/10 border border-white/20 p-3 rounded-2xl"
+        />
+
+        <p className="text-sm text-gray-300">
+          {file ? file.name : "No file selected"}
+        </p>
+
+        <button
+          onClick={uploadImage}
+          className="bg-blue-500 hover:bg-blue-600 transition px-6 py-4 rounded-2xl font-semibold"
+        >
+          Upload Image
+        </button>
+
+      </div>
+
+      {/* TASK LIST */}
       {tasks.length === 0 ? (
         <div className="text-center text-gray-300 mt-20">
           <h2 className="text-2xl mb-3">No tasks yet ✨</h2>
@@ -166,7 +216,7 @@ export default function DashboardComponent() {
           {tasks.map((t) => (
             <div
               key={t.id}
-              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-5 flex justify-between items-center hover:bg-white/20 transition-all duration-300"
+              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-5 flex justify-between items-center"
             >
 
               <div className="flex items-center gap-4">
@@ -174,17 +224,16 @@ export default function DashboardComponent() {
                   type="checkbox"
                   checked={t.completed}
                   onChange={() => toggleTask(t.id)}
-                  className="w-5 h-5"
                 />
 
-                <p className={t.completed ? "line-through text-gray-400 text-lg" : "text-lg"}>
+                <p className={t.completed ? "line-through text-gray-400" : ""}>
                   {t.title}
                 </p>
               </div>
 
               <button
                 onClick={() => deleteTask(t.id)}
-                className="bg-red-500 hover:bg-red-600 transition px-4 py-2 rounded-xl"
+                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl"
               >
                 Delete
               </button>
