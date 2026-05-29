@@ -34,7 +34,15 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token") || "";
 
+
       const data = await getTodos(token);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
 
       setTasks(data.data || data || []);
       setLoading(false);
@@ -50,6 +58,7 @@ export default function DashboardComponent() {
       const token = localStorage.getItem("token") || "";
 
       if (!task.trim()) return alert("Enter a task");
+
 
       const data = await addTodo(task, token);
 
@@ -79,6 +88,16 @@ export default function DashboardComponent() {
         }
       );
 
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: task }),
+      });
+
+
       const data = await res.json();
 
       console.log("IMAGE URL:", data.url);
@@ -98,7 +117,16 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token") || "";
 
+
       const data = await toggleTodo(id, token);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
 
       const updated = data.data || data;
 
@@ -115,7 +143,16 @@ export default function DashboardComponent() {
     try {
       const token = localStorage.getItem("token") || "";
 
+
       await deleteTodo(id, token);
+
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/todos/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
 
       setTasks((prev) => prev.filter((t) => t.id !== id));
     } catch (error) {
@@ -220,10 +257,17 @@ export default function DashboardComponent() {
             >
 
               <div className="flex items-center gap-4">
+
                 <input
                   type="checkbox"
                   checked={t.completed}
                   onChange={() => toggleTask(t.id)}
+
+                <input type="checkbox" 
+                  checked={t.completed} 
+                  onChange={() => toggleTask(t.id)} 
+                  className="w-5 h-5"
+
                 />
 
                 <p className={t.completed ? "line-through text-gray-400" : ""}>

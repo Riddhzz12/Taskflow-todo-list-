@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 /* ======================
    LOGIN
@@ -62,9 +62,9 @@ export const getTodos = async (token: string) => {
   return data;
 };
 
-/* ======================
+/*
    ADD TODO
-====================== */
+ */
 export const addTodo = async (title: string, token: string) => {
   const res = await fetch(`${BASE_URL}/todos`, {
     method: "POST",
@@ -83,6 +83,7 @@ export const addTodo = async (title: string, token: string) => {
 
   return data;
 };
+
 
 /* ======================
    TOGGLE TODO
@@ -123,3 +124,6 @@ export const deleteTodo = async (id: number, token: string) => {
 
   return data;
 };
+
+//sab api ek jagah se chale iska goal
+

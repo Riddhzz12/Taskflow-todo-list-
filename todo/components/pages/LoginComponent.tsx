@@ -10,8 +10,16 @@ export default function LoginComponent() {
   const router = useRouter();
 
   const handleLogin = async () => {
+
     try {
       const data = await loginUser(email, password);
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
 
       localStorage.setItem("token", data.token);
 
